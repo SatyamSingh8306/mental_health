@@ -1,4 +1,5 @@
 import requests
+import time
 from datetime import datetime
 
 websites = [
@@ -9,9 +10,21 @@ websites = [
     "https://portfolio-agent-bmht.onrender.com"
 ]
 
+TIMEOUT = 30   # cold starts can take 30–60s
+RETRIES = 2
+
 for web in websites:
-    try:
-        response = requests.get(web, timeout=10)
-        print(f"[{datetime.now()}] {web} -> {response.status_code}")
-    except Exception as e:
-        print(f"[{datetime.now()}] {web} -> FAILED ({e})")
+    success = False
+
+    for attempt in range(1, RETRIES + 1):
+        try:
+            response = requests.get(web, timeout=TIMEOUT)
+            print(f"[{datetime.now()}] {web} -> {response.status_code}")
+            success = True
+            break
+        except Exception as e:
+            print(f"[{datetime.now()}] {web} -> attempt {attempt} failed ({e})")
+            time.sleep(5)
+
+    if not success:
+        print(f"[{datetime.now()}] {web} -> STILL COLD / FAILED")
