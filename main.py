@@ -11,7 +11,7 @@ websites = [
 ]
 
 TIMEOUT = 30   # cold starts can take 30–60s
-RETRIES = 2
+RETRIES = 5
 
 for web in websites:
     success = False
